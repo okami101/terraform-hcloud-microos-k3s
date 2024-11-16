@@ -20,7 +20,7 @@ locals {
         port        = "6443"
         source_ips  = var.firewall_kube_api_source
       }
-    ]
+    ],
     [
       {
         description = "Allow Incoming ICMP Ping Requests"
