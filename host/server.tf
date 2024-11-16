@@ -38,9 +38,9 @@ EOT
 }
 
 resource "hcloud_server_network" "server" {
-  ip        = var.private_ipv4
-  server_id = hcloud_server.server.id
-  subnet_id = var.hcloud_subnet_id
+  ip         = var.private_ipv4
+  server_id  = hcloud_server.server.id
+  network_id = var.hcloud_network_id
 }
 
 resource "hcloud_volume" "volumes" {

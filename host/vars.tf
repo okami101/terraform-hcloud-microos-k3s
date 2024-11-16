@@ -48,8 +48,8 @@ variable "private_ipv4" {
   type        = string
 }
 
-variable "hcloud_subnet_id" {
-  description = "The subnet ID to use for the server"
+variable "hcloud_network_id" {
+  description = "The network ID to use for the server"
   type        = number
 }
 
