@@ -2,6 +2,26 @@ locals {
   network_ipv4_subnets = [
     for index in range(256) : cidrsubnet(var.network_ipv4_cidr, 8, index)
   ]
+  firewall_rules = concat(
+    var.firewall_ssh_source == null ? [] : [
+      {
+        description = "Allow Incoming SSH Traffic"
+        direction   = "in"
+        protocol    = "tcp"
+        port        = var.ssh_port
+        source_ips  = var.firewall_ssh_source
+      },
+    ],
+    var.firewall_kube_api_source == null ? [] : [
+      {
+        description = "Allow Incoming Requests to Kube API Server"
+        direction   = "in"
+        protocol    = "tcp"
+        port        = "6443"
+        source_ips  = var.firewall_kube_api_source
+      }
+    ]
+  )
 }
 
 resource "random_password" "k3s_token" {
@@ -32,19 +52,14 @@ resource "hcloud_network_subnet" "agent" {
 resource "hcloud_firewall" "k3s" {
   name = var.cluster_name
 
-  rule {
-    description = "Allow access to the kube API"
-    direction   = "in"
-    protocol    = "tcp"
-    port        = 6443
-    source_ips  = var.firewall_kube_api_source
-  }
-
-  rule {
-    description = "Allow SSH access"
-    direction   = "in"
-    protocol    = "tcp"
-    port        = var.ssh_port
-    source_ips  = var.firewall_ssh_source
+  dynamic "rule" {
+    for_each = local.firewall_rules
+    content {
+      description = rule.value.description
+      direction   = rule.value.direction
+      protocol    = rule.value.protocol
+      port        = rule.value.port
+      source_ips  = rule.value.source_ips
+    }
   }
 }
