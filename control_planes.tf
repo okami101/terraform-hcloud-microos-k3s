@@ -1,5 +1,5 @@
 module "control_planes" {
-  for_each            = [for i, s in local.control_planes : s if i > 0]
+  for_each            = { for i, s in local.control_planes : i => s if i > 0 }
   source              = "./host"
   name                = each.value.name
   type                = each.value.server_type

@@ -1,5 +1,5 @@
 module "agents" {
-  for_each            = [for i, s in local.agents : s]
+  for_each            = { for i, s in local.agents : i => s }
   source              = "./host"
   name                = each.value.name
   type                = each.value.server_type

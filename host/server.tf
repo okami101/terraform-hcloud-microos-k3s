@@ -50,7 +50,7 @@ resource "hcloud_server_network" "server" {
 }
 
 resource "hcloud_volume" "volumes" {
-  for_each  = [for i, s in var.hcloud_volumes : s if s.size >= 10]
+  for_each  = { for i, s in var.hcloud_volumes : i => s if s.size >= 10 }
   name      = "${var.name}-${each.value.name}"
   size      = each.value.size
   server_id = hcloud_server.server.id
