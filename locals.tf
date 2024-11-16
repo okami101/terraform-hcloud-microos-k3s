@@ -28,7 +28,10 @@ locals {
     ]
   ])
   k3s_pre_install_scripts = concat(
-    var.ssh_port == 22 ? [] : ["semanage port -a -t ssh_port_t -p tcp ${var.ssh_port}"],
+    var.ssh_port == 22 ? [] : [
+      "semanage port -a -t ssh_port_t -p tcp ${var.ssh_port}",
+      "systemctl restart sshd"
+    ],
     ["systemctl disable --now rebootmgr.service"],
   )
   k3s_install_script = "curl -sfL https://get.k3s.io | INSTALL_K3S_SKIP_START=true INSTALL_K3S_SKIP_SELINUX_RPM=true ${"INSTALL_K3S_${var.initial_k3s_version != null ? "VERSION" : "CHANNEL"}=${coalesce(var.initial_k3s_version, var.initial_k3s_channel)}"} K3S_TOKEN=${random_password.k3s_token.result}"
