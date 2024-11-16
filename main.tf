@@ -2,7 +2,7 @@ locals {
   network_ipv4_subnets = [
     for index in range(256) : cidrsubnet(var.network_ipv4_cidr, 8, index)
   ]
-  base_firewall_rules = concat(
+  firewall_rules = concat(
     var.firewall_ssh_source == null ? [] : [
       {
         description = "Allow Incoming SSH Traffic"
@@ -22,8 +22,6 @@ locals {
       }
     ]
   )
-
-  firewall_rules = { for rule in local.base_firewall_rules : format("%s-%s-%s", lookup(rule, "direction", "null"), lookup(rule, "protocol", "null"), lookup(rule, "port", "null")) => rule }
 }
 
 resource "random_password" "k3s_token" {
@@ -53,4 +51,15 @@ resource "hcloud_network_subnet" "agent" {
 
 resource "hcloud_firewall" "k3s" {
   name = var.cluster_name
+
+  dynamic "rule" {
+    for_each = local.firewall_rules
+    content {
+      description = rule.value.description
+      direction   = rule.value.direction
+      protocol    = rule.value.protocol
+      port        = rule.value.port
+      source_ips  = rule.value.source_ips
+    }
+  }
 }
