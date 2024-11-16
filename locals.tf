@@ -31,13 +31,24 @@ locals {
   k3s_post_install_scripts = [
     "/sbin/semodule -v -i /usr/share/selinux/packages/k3s.pp",
     "restorecon -v /usr/local/bin/k3s",
-    "systemctl start k3s"
   ]
-  k3s_server_runcmd = concat([
-    "${local.k3s_install_script} sh -s - server"
-  ], local.k3s_post_install_scripts)
-  k3s_agent_runcmd = concat([
-    "systemctl enable --now iscsid",
-    "${local.k3s_install_script} sh -s - agent"
-  ], local.k3s_post_install_scripts)
+  k3s_server_runcmd = concat(
+    [
+      "${local.k3s_install_script} sh -s - server"
+    ],
+    local.k3s_post_install_scripts,
+    [
+      "systemctl start k3s"
+    ]
+  )
+  k3s_agent_runcmd = concat(
+    [
+      "systemctl enable --now iscsid",
+      "${local.k3s_install_script} sh -s - agent"
+    ],
+    local.k3s_post_install_scripts,
+    [
+      "systemctl start k3s-agent"
+    ]
+  )
 }
