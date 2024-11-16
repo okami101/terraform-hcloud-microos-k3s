@@ -23,4 +23,5 @@ module "agents" {
       size = each.value.volume_size
     }
   ] : []
+  depends_on = [module.first_control_plane]
 }

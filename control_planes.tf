@@ -19,5 +19,6 @@ module "control_planes" {
       kubelet-arg = var.k3s_global_kubelet_args
     }
   )
-  runcmd = local.k3s_server_runcmd
+  runcmd     = local.k3s_server_runcmd
+  depends_on = [module.first_control_plane]
 }
