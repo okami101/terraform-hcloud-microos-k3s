@@ -26,6 +26,7 @@ locals {
         description = "Allow Incoming ICMP Ping Requests"
         direction   = "in"
         protocol    = "icmp"
+        port        = ""
         source_ips  = ["0.0.0.0/0", "::/0"]
       }
     ]
