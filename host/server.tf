@@ -39,7 +39,7 @@ resource "hcloud_server_network" "server" {
 
 resource "hcloud_volume" "volumes" {
   for_each  = { for i, v in var.hcloud_volumes : i => v if v.size >= 10 }
-  name      = each.key
+  name      = each.value.name
   size      = each.value.size
   server_id = hcloud_server.server.id
   automount = true
