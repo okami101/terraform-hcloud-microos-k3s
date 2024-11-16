@@ -4,11 +4,17 @@ data "hcloud_image" "microos_x86_snapshot" {
   most_recent       = true
 }
 
+data "hcloud_image" "microos_arm_snapshot" {
+  with_selector     = "microos-snapshot=yes"
+  with_architecture = "arm"
+  most_recent       = true
+}
+
 resource "hcloud_server" "server" {
   name         = var.name
-  image        = data.hcloud_image.microos_x86_snapshot.id
   server_type  = var.type
   location     = var.location
+  image        = substr(var.type, 0, 3) == "cax" ? data.hcloud_image.microos_arm_snapshot.id : data.hcloud_image.microos_x86_snapshot.id
   firewall_ids = var.hcloud_firewall_ids
   ssh_keys     = var.hcloud_ssh_keys
   lifecycle {
