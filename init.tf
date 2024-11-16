@@ -1,6 +1,6 @@
 module "first_control_plane" {
   source              = "./host"
-  name                = local.control_planes[0].name
+  name                = "${var.cluster_name}-${local.control_planes[0].name}"
   type                = local.control_planes[0].server_type
   location            = local.control_planes[0].location
   hcloud_firewall_ids = [hcloud_firewall.k3s.id]

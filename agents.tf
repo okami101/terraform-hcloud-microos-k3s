@@ -1,7 +1,7 @@
 module "agents" {
-  for_each            = { for i, s in local.agents : i => s }
+  for_each            = { for i, s in local.agents : s.name => s }
   source              = "./host"
-  name                = each.value.name
+  name                = "${var.cluster_name}-${each.key}"
   type                = each.value.server_type
   location            = each.value.location
   hcloud_firewall_ids = [hcloud_firewall.k3s.id]
@@ -19,7 +19,7 @@ module "agents" {
   runcmd = local.k3s_agent_runcmd
   hcloud_volumes = each.value.volume_size >= 10 ? [
     {
-      name = each.value.name
+      name = each.key
       size = each.value.volume_size
     }
   ] : []

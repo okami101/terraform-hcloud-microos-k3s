@@ -1,7 +1,7 @@
 module "control_planes" {
-  for_each            = { for i, s in local.control_planes : i => s if i > 0 }
+  for_each            = { for i, s in local.control_planes : s.name => s if i > 0 }
   source              = "./host"
-  name                = each.value.name
+  name                = "${var.cluster_name}-${each.key}"
   type                = each.value.server_type
   location            = each.value.location
   hcloud_firewall_ids = [hcloud_firewall.k3s.id]

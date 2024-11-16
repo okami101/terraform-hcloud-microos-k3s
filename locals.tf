@@ -1,7 +1,7 @@
 locals {
   control_planes = [
     for i, s in var.control_planes : {
-      name        = "${var.cluster_name}-${s.name}-${format("%02d", i + 1)}"
+      name        = "${s.name}-${format("%02d", i + 1)}"
       server_type = s.server_type
       location    = s.location
       private_ipv4 = cidrhost(
@@ -14,7 +14,7 @@ locals {
   agents = flatten([
     for i, s in var.agent_nodepools : [
       for j in range(s.count) : {
-        name        = "${var.cluster_name}-${s.name}-${format("%02d", j + 1)}"
+        name        = "${s.name}-${format("%02d", j + 1)}"
         server_type = s.server_type
         location    = s.location
         private_ipv4 = cidrhost(
