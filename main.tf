@@ -2,7 +2,7 @@ locals {
   network_ipv4_subnets = [
     for index in range(256) : cidrsubnet(var.network_ipv4_cidr, 8, index)
   ]
-  firewall_rules = concat(
+  base_firewall_rules = concat(
     var.firewall_ssh_source == null ? [] : [
       {
         description = "Allow Incoming SSH Traffic"
@@ -21,16 +21,9 @@ locals {
         source_ips  = var.firewall_kube_api_source
       }
     ]
-    [
-      {
-        description = "Allow Incoming ICMP Ping Requests"
-        direction   = "in"
-        protocol    = "icmp"
-        port        = ""
-        source_ips  = ["0.0.0.0/0", "::/0"]
-      }
-    ]
   )
+
+  firewall_rules = { for rule in local.base_firewall_rules : format("%s-%s-%s", lookup(rule, "direction", "null"), lookup(rule, "protocol", "null"), lookup(rule, "port", "null")) => rule }
 }
 
 resource "random_password" "k3s_token" {
