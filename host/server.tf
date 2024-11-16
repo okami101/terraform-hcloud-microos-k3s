@@ -27,19 +27,7 @@ resource "hcloud_server" "server" {
   }
   user_data = <<-EOT
 #cloud-config
-${yamlencode({
-  write_files = [
-    local.ssh_custom_config,
-    local.transactional_update_custom_config,
-    {
-      path        = "/etc/rancher/k3s/config.yaml"
-      encoding    = "b64"
-      permissions = "0644"
-      content     = base64encode(yamlencode(var.k3s_config))
-    },
-  ]
-  runcmd = var.runcmd
-})}
+${yamlencode(local.cloud_init)}
 EOT
 }
 
