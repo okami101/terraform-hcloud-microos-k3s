@@ -1,9 +1,3 @@
-data "hcloud_image" "microos_x86_snapshot" {
-  with_selector     = "microos-snapshot=yes"
-  with_architecture = "x86"
-  most_recent       = true
-}
-
 locals {
   network_ipv4_subnets = [
     for index in range(256) : cidrsubnet(var.network_ipv4_cidr, 8, index)
