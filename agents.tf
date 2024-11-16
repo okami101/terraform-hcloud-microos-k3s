@@ -19,7 +19,7 @@ module "agents" {
   runcmd = local.k3s_agent_runcmd
   hcloud_volumes = each.value.volume_size >= 10 ? [
     {
-      name = each.key
+      name = "${var.cluster_name}-${each.key}"
       size = each.value.volume_size
     }
   ] : []
