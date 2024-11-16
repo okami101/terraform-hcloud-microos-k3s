@@ -10,7 +10,7 @@ module "agents" {
   private_ipv4        = each.value.private_ipv4
   ssh_port            = var.ssh_port
   k3s_config = {
-    server      = local.control_planes[0].private_ipv4
+    server      = local.kupe_api_server_url
     node-ip     = each.value.private_ipv4
     node-label  = each.value.labels
     node-taint  = each.value.taints

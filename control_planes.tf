@@ -12,7 +12,7 @@ module "control_planes" {
   k3s_config = merge(
     var.control_planes_custom_config,
     {
-      server      = local.control_planes[0].private_ipv4
+      server      = local.kupe_api_server_url
       node-ip     = each.value.private_ipv4
       node-label  = each.value.labels
       node-taint  = each.value.taints

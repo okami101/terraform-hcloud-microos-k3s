@@ -1,4 +1,5 @@
 locals {
+  kupe_api_server_url = "https://${local.control_planes[0].private_ipv4}:6443"
   control_planes = [
     for i, s in var.control_planes : {
       name        = "${s.name}-${format("%02d", i + 1)}"
