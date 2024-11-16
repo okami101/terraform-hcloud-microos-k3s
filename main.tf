@@ -21,6 +21,14 @@ locals {
         source_ips  = var.firewall_kube_api_source
       }
     ]
+    [
+      {
+        description = "Allow Incoming ICMP Ping Requests"
+        direction   = "in"
+        protocol    = "icmp"
+        source_ips  = ["0.0.0.0/0", "::/0"]
+      }
+    ]
   )
 }
 
