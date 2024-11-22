@@ -19,7 +19,6 @@ resource "hcloud_server" "server" {
   ssh_keys     = var.hcloud_ssh_keys
   lifecycle {
     ignore_changes = [
-      firewall_ids,
       user_data,
       ssh_keys,
       image
