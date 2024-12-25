@@ -1,0 +1,124 @@
+variable "hcloud_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "s3_access_key" {
+  type = string
+}
+
+variable "s3_secret_key" {
+  type      = string
+  sensitive = true
+}
+
+provider "hcloud" {
+  token = var.hcloud_token
+}
+
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    hcloud = {
+      source  = "hetznercloud/hcloud"
+      version = ">= 1.43.0"
+    }
+  }
+}
+
+module "kube-hetzner" {
+  providers = {
+    hcloud = hcloud
+  }
+
+  source = "github.com/okami101/terraform-hcloud-microos-k3s"
+
+  cluster_name    = "okami-k3s"
+  hcloud_ssh_keys = ["adrien"]
+  ssh_port        = 2222
+  network_zone    = "eu-central"
+
+  firewall_kube_api_source = null
+  firewall_ssh_source      = null
+
+  initial_k3s_channel = "latest"
+
+  control_planes = [
+    {
+      name        = "control-plane",
+      server_type = "cx22",
+      location    = "nbg1",
+      labels = [
+        "node.kubernetes.io/exclude-from-external-load-balancers=true"
+      ],
+      taints = [
+        "node-role.kubernetes.io/control-plane:NoSchedule"
+      ]
+    }
+  ]
+
+  agent_nodepools = [
+    {
+      name        = "worker"
+      server_type = "cx32"
+      location    = "nbg1"
+      labels      = []
+      taints      = []
+      count       = 3
+    },
+    {
+      name        = "storage"
+      server_type = "cx22"
+      location    = "nbg1"
+      labels = [
+        "node.kubernetes.io/role=storage",
+        "node.kubernetes.io/exclude-from-external-load-balancers=true"
+      ]
+      taints = [
+        "node-role.kubernetes.io/storage:NoExecute"
+      ]
+      volume_size = 30
+      count       = 2
+    },
+    {
+      name        = "monitor"
+      server_type = "cx22"
+      location    = "nbg1"
+      labels = [
+        "node.kubernetes.io/role=monitor",
+        "node.kubernetes.io/exclude-from-external-load-balancers=true"
+      ]
+      taints = [
+        "node-role.kubernetes.io/monitor:NoExecute"
+      ]
+      count = 1
+    }
+  ]
+
+  control_planes_custom_config = {
+    selinux                     = true
+    flannel-backend             = "none"
+    disable-cloud-controller    = true
+    disable-network-policy      = true
+    disable-kube-proxy          = true
+    tls-san                     = ["k3s.okami101.io"]
+    disable                     = ["traefik", "servicelb"]
+    secrets-encryption          = true
+    etcd-s3                     = true
+    etcd-s3-endpoint            = "s3.fr-par.scw.cloud"
+    etcd-s3-access-key          = var.s3_access_key
+    etcd-s3-secret-key          = var.s3_secret_key
+    etcd-s3-region              = "fr-par"
+    etcd-s3-bucket              = "okami101"
+    etcd-s3-folder              = "etcd"
+    etcd-snapshot-schedule-cron = "0 0 * * *"
+    etcd-expose-metrics         = true
+    kube-scheduler-arg          = "bind-address=0.0.0.0"
+    kube-controller-manager-arg = "bind-address=0.0.0.0"
+    kube-proxy-arg              = "metrics-bind-address=0.0.0.0"
+  }
+
+  k3s_global_kubelet_args = [
+    "cloud-provider=external"
+  ]
+}
