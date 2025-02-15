@@ -4,6 +4,7 @@ module "control_planes" {
   name                = "${var.cluster_name}-${each.key}"
   type                = each.value.server_type
   location            = each.value.location
+  placement_group_id  = each.value.placement_group_id
   hcloud_firewall_ids = [hcloud_firewall.k3s.id]
   hcloud_ssh_keys     = var.hcloud_ssh_keys
   hcloud_network_id   = hcloud_network.k3s.id

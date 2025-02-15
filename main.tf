@@ -72,3 +72,13 @@ resource "hcloud_firewall" "k3s" {
     }
   }
 }
+
+resource "hcloud_placement_group" "k3s" {
+  for_each = { for pg in concat([
+    for s in var.control_planes : s.placement_group if s.placement_group != null
+    ], [
+    for s in var.agent_nodepools : s.placement_group if s.placement_group != null
+  ]) : pg => pg }
+  name = "${var.cluster_name}-${each.value}"
+  type = "spread"
+}

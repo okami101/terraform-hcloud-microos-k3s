@@ -73,23 +73,25 @@ variable "control_planes_custom_config" {
 variable "control_planes" {
   description = "List of control planes"
   type = list(object({
-    name        = string
-    server_type = string
-    location    = string
-    labels      = list(string)
-    taints      = list(string)
+    name            = string
+    server_type     = string
+    location        = string
+    placement_group = optional(string)
+    labels          = list(string)
+    taints          = list(string)
   }))
 }
 
 variable "agent_nodepools" {
   description = "List of all additional worker types to create for k3s cluster. Each type is identified by specific role and can have a different number of instances."
   type = list(object({
-    name        = string
-    server_type = string
-    location    = string
-    count       = number
-    labels      = list(string)
-    taints      = list(string)
-    volume_size = optional(number)
+    name            = string
+    server_type     = string
+    location        = string
+    count           = number
+    placement_group = optional(string)
+    labels          = list(string)
+    taints          = list(string)
+    volume_size     = optional(number)
   }))
 }

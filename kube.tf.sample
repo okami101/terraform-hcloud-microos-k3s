@@ -59,12 +59,13 @@ module "kube-hetzner" {
 
   agent_nodepools = [
     {
-      name        = "worker"
-      server_type = "cx32"
-      location    = "nbg1"
-      labels      = []
-      taints      = []
-      count       = 3
+      name            = "worker"
+      server_type     = "cx32"
+      location        = "nbg1"
+      labels          = []
+      taints          = []
+      count           = 3
+      placement_group = "spread"
     },
     {
       name        = "storage"
@@ -77,8 +78,9 @@ module "kube-hetzner" {
       taints = [
         "node-role.kubernetes.io/storage:NoExecute"
       ]
-      volume_size = 30
-      count       = 2
+      volume_size     = 30
+      count           = 2
+      placement_group = "spread"
     },
     {
       name        = "monitor"

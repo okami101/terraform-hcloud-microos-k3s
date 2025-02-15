@@ -11,12 +11,13 @@ data "hcloud_image" "microos_arm_snapshot" {
 }
 
 resource "hcloud_server" "server" {
-  name         = var.name
-  server_type  = var.type
-  location     = var.location
-  image        = substr(var.type, 0, 3) == "cax" ? data.hcloud_image.microos_arm_snapshot.id : data.hcloud_image.microos_x86_snapshot.id
-  firewall_ids = var.hcloud_firewall_ids
-  ssh_keys     = var.hcloud_ssh_keys
+  name               = var.name
+  server_type        = var.type
+  location           = var.location
+  image              = substr(var.type, 0, 3) == "cax" ? data.hcloud_image.microos_arm_snapshot.id : data.hcloud_image.microos_x86_snapshot.id
+  placement_group_id = var.placement_group_id
+  firewall_ids       = var.hcloud_firewall_ids
+  ssh_keys           = var.hcloud_ssh_keys
   lifecycle {
     ignore_changes = [
       user_data,

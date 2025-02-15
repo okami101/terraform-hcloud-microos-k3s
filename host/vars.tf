@@ -13,6 +13,12 @@ variable "name" {
   type        = string
 }
 
+variable "placement_group_id" {
+  description = "The placement group ID to use for the servers"
+  type        = number
+  default     = null
+}
+
 variable "hcloud_ssh_keys" {
   description = "List of hcloud SSH keys that will be used to access the servers"
   default     = []
